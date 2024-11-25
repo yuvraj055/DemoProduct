@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Security Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary: #4A90E2;
+            --secondary: #F5F9FF;
+            --text: #2C3E50;
+            --danger: #E74C3C;
+            --success: #2ECC71;
+            --warning: #F1C40F;
+            --sidebar-width: 250px;
+            --dark-primary: #357ABD;
+        }
+
+        body {
+            background: var(--secondary);
+            color: var(--text);
+        }
+
+        /* Enhanced Login Styles */
+        .login-container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(74, 144, 226, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(44, 62, 80, 0.4) 0%, transparent 50%);
+            animation: backgroundMove 20s infinite alternate;
+        }
+
+        @keyframes backgroundMove {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        .login-form h2 {
+            margin-bottom: 2rem;
+            color: var(--primary);
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .input-group input {
+            padding-left: 45px;
+        }
+
+        /* Password Manager Enhancements */
+        .password-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .password-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .password-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            background: #f8f9fa;
+        }
+
+        .password-item:hover {
+            border-color: var(--primary);
+        }
+
+        .password-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .action-btn:hover {
+            color: var(--primary);
+        }
+
+        .password-details {
+            flex-grow: 1;
+        }
+
+        .password-url {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Reports Section */
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .report-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .report-chart {
+            height: 300px;
+            margin: 1.5rem 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Keep existing styles and add these new ones */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Rest of your existing styles... */
+
+        /* Additional Enhancements */
+        .nav-item {
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Responsive enhancements */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div class="login-container" id="loginSection">
+        <div class="login-background"></div>
+        <div class="login-form">
+            <h2><i class="fas fa-shield-alt"></i> Security Dashboard</h2>
+            <div id="loginError" class="alert alert-danger" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i> Invalid credentials. Please try again.
+            </div>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="email" id="email" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button onclick="login()" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="main-container" id="mainContainer" style="display: none;">
+        <div class="sidebar">
+            <h2><i class="fas fa-shield-alt"></i> Security Dashboard</h2>
+            <div class="nav-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </div>
+            <div class="nav-item" onclick="showSection('vulnerability')">
+                <i class="fas fa-search"></i> Vulnerability Scan
+            </div>
+            <div class="nav-item" onclick="showSection('filecheck')">
+                <i class="fas fa-file-shield"></i> File Check
+            </div>
+            <div class="nav-item" onclick="showSection('passwords')">
+                <i class="fas fa-key"></i> Password Manager
+            </div>
+            <div class="nav-item" onclick="showSection('reports')">
+                <i class="fas fa-file-alt"></i> Reports
+            </div>
+            <div class="nav-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Keep existing dashboard, vulnerability scan, and file check sections -->
+            
+            <!-- Enhanced Password Manager Section -->
+            <div class="section" id="passwords">
+                <h2>Password Manager</h2>
+                
+                <!-- Password Generator -->
+                <div class="password-card">
+                    <h3><i class="fas fa-key"></i> Generate Strong Password</h3>
+                    <div class="password-grid">
+                        <input type="text" id="generatedPassword" readonly>
+                        <div class="password-controls">
+                            <input type="range" id="lengthSlider" min="8" max="32" value="16">
+                            <span id="lengthValue">16 characters</span>
+                        </div>
+                        <div class="password-options">
+                            <label><input type="checkbox" id="uppercase" checked> Uppercase</label>
+                            <label><input type="checkbox" id="numbers" checked> Numbers</label>
+                            <label><input type="checkbox" id="symbols" checked> Symbols</label>
+                        </div>
+                        <button onclick="generatePassword()">Generate</button>
+                    </div>
+                    <div id="strengthMeter"><div></div></div>
+                    <div id="passwordStrength"></div>
+                </div>
+
+                <!-- Saved Passwords -->
+                <div class="password-card">
+                    <h3><i class="fas fa-lock"></i> Saved Passwords</h3>
+                    <div class="password-filters">
+                        <input type="text" placeholder="Search passwords..." id="passwordSearch">
+                        <button onclick="addNewPassword()">Add New</button>
+                    </div>
+                    <div class="password-list" id="savedPasswords">
+                        <!-- Password items will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Reports Section -->
+            <div class="section" id="reports">
+                <h2>Security Reports</h2>
+                
+                <div class="report-card">
+                    <div class="report-header">
+                        <h3>Vulnerability Assessment History</h3>
+                        <select id="reportPeriod">
+                            <option value="7">Last 7 days</option>
+                            <option value="30">Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                        </select>
+                    </div>
+                    <div class="report-chart" id="vulnerabilityChart">
+                        <!-- Chart will be rendered here -->
+                        Chart Placeholder
+                    </div>
+                    <div class="report-summary">
+                        <div class="summary-item">
+                            <h4>Total Scans</h4>
+                            <p>156</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Critical Issues</h4>
+                            <p>12</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Resolution Rate</h4>
+                            <p>87%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-card">
+                    <h3>Recent Findings</h3>
+                    <div class="findings-list">
+                        <!-- Sample findings -->
+                        <div class="finding-item critical">
+                            <span class="severity">Critical</span>
+                            <p>SQL Injection vulnerability detected in login form</p>
+                            <small>2024-03-15</small>
+                        </div>
+                        <div class="finding-item high">
+                            <span class="severity">High</span>
+                            <p>Outdated SSL certificate on main domain</p>
+                            <small>2024-03-14</small>
+                        </div>
+                        <div class="finding-item medium">
+                            <span class="severity">Medium</span>
+                            <p>Cross-site scripting vulnerability in search function</p>
+                            <small>2024-03-13</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Password Manager functionality
+        const savedPasswords = [
+            { site: 'demo@gmail.com', username: 'demouser', password: '••••••••', url: 'https://gmail.com' },
+            { site: 'admin@server.com', username: 'admin', password: '••••••••', url: 'https://admin.server.com' }
+        ];
+
+        function updatePasswordList() {
+            const container = document.getElementById('savedPasswords');
+            container.innerHTML = '';
+            
+            savedPasswords.forEach((entry, index) => {
+                const item = document.createElement('div');
+                item.className = 'password-item';
+                item.innerHTML = `
+                    <div class="password-details">
+                        <strong>${entry.site}</strong>
+                        <div class="password-url">${entry.url}</div>
+                        <div>Username: ${entry.username}</div>
+                        <div>Password: ${entry.password}</div>
+                    </div>
+                    <div class="password-actions">
+                        <button class="action-btn" onclick="copyPassword(${index})">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="action-btn" onclick="editPassword(${index})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn" onclick="deletePassword(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function addNewPassword() {
+            const site = prompt('Enter site name:');
+            if (site) {
+                const username = prompt('Enter username:');
+                const password = prompt('Enter password:');
+                const url = prompt('Enter URL:');
+                
+                savedPasswords.push({ site, username, password: '••••••••', url });
+                updatePasswordList();
+            }
+        }
+
+        function copyPassword(index) {
+            // Simulate copy (in real app, would copy actual password)
+            alert('Password copied to clipboard!');
+        }
+
+        function editPassword(index) {
+            const entry = savedPasswords[index];
+            const site = prompt('Edit site name:', entry.site);
+            if (site) {
+                const username = prompt('Edit username:', entry.username);
+                const url = prompt('Edit URL:', entry.url);
+                
+                savedPasswords[index] = { ...entry, site, username, url };
+                updatePasswordList();
+            }
+        }
+
+        function deletePassword(index) {
+            if (confirm('Are you sure you want to delete this password?')) {
+                savedPasswords.splice(index, 1);
+                updatePasswordList();
+            }
+        }
+
+        // Enhanced Password Generator
+        function generatePassword() {
+            const length = parseInt(document.getElementById('lengthSlider').value);
+            const useUppercase = document.getElementById('uppercase').checked;
+            const useNumbers = document.getElementById('numbers').checked;
+            const useSymbols = document.getElementById('symbols').checked;
+            
+            let chars = 'abcdefghijklmnopqrstuvwxyz';
+            if (useUppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (useNumbers) chars += '0123456789';
+            if (useSymbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            let password = '';
+            
+            // Ensure at least one character from each selected type
+            if (useUppercase) password += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(Math.floor(Math.random() * 26));
+            if (useNumbers) password += '0123456789'.charAt(Math.floor(Math.random() * 10));
+            if (useSymbols) password += '!@#$%^&*()_+-=[]{}|;:,.<>?'.charAt(Math.floor(Math.random() * 24));
+            
+            // Fill the rest randomly
+            while (password.length < length) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            // Shuffle the password
+            password = password.split('').sort(() => Math.random() - 0.5).join('');
+            
+            document.getElementById('generatedPassword').value = password;
+            updatePasswordStrength(password);
+        }
+
+        // Enhanced Password Strength Meter
+        function updatePasswordStrength(password) {
+            const meter = document.getElementById('strengthMeter').firstElementChild;
+            const strength = document.getElementById('passwordStrength');
+            
+            let score = 0;
+            const checks = {
+                length: password.length >= 12,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                numbers: /[0-9]/.test(password),
+                symbols: /[^A-Za-z0-9]/.test(password),
+                variety: new Set(password).size > 8,
+                noRepeats: !/(.)\1{2,}/.test(password),
+                noSequential: !/abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789/i.test(password)
+            };
+            
+            // Calculate score with weighted criteria
+            score += checks.length ? 20 : 0;
+            score += checks.uppercase ? 15 : 0;
+            score += checks.lowercase ? 15 : 0;
+            score += checks.numbers ? 15 : 0;
+            score += checks.symbols ? 15 : 0;
+            score += checks.variety ? 10 : 0;
+            score += checks.noRepeats ? 5 : 0;
+            score += checks.noSequential ? 5 : 0;
+            
+            // Cap at 100
+            score = Math.min(100, score);
+
+            // Update UI with detailed feedback
+            meter.style.width = score + '%';
+            let feedback = [];
+            
+            if (score > 80) {
+                meter.style.backgroundColor = 'var(--success)';
+                strength.innerHTML = '💪 Very Strong Password';
+                strength.style.color = 'var(--success)';
+            } else if (score > 60) {
+                meter.style.backgroundColor = 'var(--primary)';
+                strength.innerHTML = '✅ Strong Password';
+                strength.style.color = 'var(--primary)';
+            } else if (score > 40) {
+                meter.style.backgroundColor = 'var(--warning)';
+                strength.innerHTML = '⚠️ Medium Strength';
+                strength.style.color = 'var(--warning)';
+            } else {
+                meter.style.backgroundColor = 'var(--danger)';
+                strength.innerHTML = '❌ Weak Password';
+                strength.style.color = 'var(--danger)';
+            }
+
+            // Add detailed feedback
+            if (!checks.length) feedback.push('Consider using at least 12 characters');
+            if (!checks.uppercase) feedback.push('Add uppercase letters');
+            if (!checks.numbers) feedback.push('Add numbers');
+            if (!checks.symbols) feedback.push('Add special characters');
+            if (!checks.noRepeats) feedback.push('Avoid repeated characters');
+            if (!checks.noSequential) feedback.push('Avoid sequential characters');
+
+            if (feedback.length > 0) {
+                strength.innerHTML += '<br><small>' + feedback.join(' • ') + '</small>';
+            }
+        }
+
+        // Login functionality with enhanced security
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginError = document.getElementById('loginError');
+
+            // Add loading state
+            const loginButton = document.querySelector('.login-btn');
+            loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            loginButton.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                if (email === 'demo@example.com' && password === 'demo123') {
+                    loginError.style.display = 'none';
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('mainContainer').style.display = 'block';
+                    initializeDashboard();
+                } else {
+                    loginError.style.display = 'block';
+                    loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                    loginButton.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                document.getElementById('loginSection').style.display = 'flex';
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // Initialize dashboard components
+        function initializeDashboard() {
+            updatePasswordList();
+            generatePassword();
+            setupEventListeners();
+            initializeReports();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Password length slider
+            const lengthSlider = document.getElementById('lengthSlider');
+            const lengthValue = document.getElementById('lengthValue');
+            lengthSlider.addEventListener('input', () => {
+                lengthValue.textContent = `${lengthSlider.value} characters`;
+            });
+
+            // Password search functionality
+            const passwordSearch = document.getElementById('passwordSearch');
+            passwordSearch.addEventListener('input', () => {
+                const searchTerm = passwordSearch.value.toLowerCase();
+                const items = document.querySelectorAll('.password-item');
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+                });
+            });
+        }
+
+        // Initialize reports data
+        function initializeReports() {
+            // Simulate loading report data
+            const reportPeriod = document.getElementById('reportPeriod');
+            reportPeriod.addEventListener('change', updateReports);
+            updateReports();
+        }
+
+        function updateReports() {
+            // Update chart and statistics based on selected period
+            const period = document.getElementById('reportPeriod').value;
+            
+            // Simulate updating chart data
+            document.getElementById('vulnerabilityChart').innerHTML = `
+                <div style="text-align: center;">
+                    <i class="fas fa-chart-line fa-3x"></i>
+                    <p>Vulnerability Trends - Last ${period} days</p>
+                </div>
+            `;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add enter key listener for login
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+            
+            // Initialize password manager
+            generatePassword();
+            updatePasswordList();
+        });
+    </script>
+</body>
+</html>
